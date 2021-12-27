@@ -12,7 +12,9 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/signup.html");
 });
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.post("/", (req, res) => {
 
@@ -24,42 +26,45 @@ app.post("/", (req, res) => {
 
   const data = {
     members: [{
-        email_address: email,
-        status: "subscribed",
-        merge_fields:{
-          FNAME: firstName,
-          LNAME: lastName
-        }
+      email_address: email,
+      status: "subscribed",
+      merge_fields: {
+        FNAME: firstName,
+        LNAME: lastName
       }
-    ]
+    }]
   }
 
-const jsonData = JSON.stringify(data);
+  const jsonData = JSON.stringify(data);
 
-const url = "https://us20.api.mailchimp.com/3.0/lists/5fc2b7dc75";
-const options = {
-  method: "POST",
-  auth: "userNatallia:a94d3a30a6cc237d5d6b288959e79d6d-us20"
-};
+  const url = "https://us20.api.mailchimp.com/3.0/lists/5fc2b7dc75";
+  const options = {
+    method: "POST",
+    auth: "userNatallia:a94d3a30a6cc237d5d6b288959e79d6d-us20"
+  };
 
-var request = https.request(url, options, (response)=>{
+  var request = https.request(url, options, (response) => {
 
-if (response.statusCode==200){
-  res.sendFile(__dirname + "/success.html");
-}
-else {res.sendFile(__dirname + "/failure.html");}
+    if (response.statusCode === 200) {
+      res.sendFile(__dirname + "/success.html");
+    } else {
+      res.sendFile(__dirname + "/failure.html");
+    }
 
-response.on("data", (data)=>{
-  console.log(JSON.parse(data));
-})
+    response.on("data", (data) => {
+      console.log(JSON.parse(data));
+    });
+
+  });
+
+  request.write(jsonData);
+  request.end();
+
 });
 
-request.write(jsonData);
-request.end();
 
-})
 
-app.post("/failure", (req, res)=>{
+app.post("/failure", (req, res) => {
   res.redirect("/")
 })
 
